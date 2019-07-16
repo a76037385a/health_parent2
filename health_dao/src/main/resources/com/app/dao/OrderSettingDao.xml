@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.app.dao.OrderSettingDao">
+
+    <select id="findOrderSettingByDate" parameterType="Date" resultType="int">
+    SELECT COUNT(1) FROM t_ordersetting WHERE orderDate=#{date}
+    </select>
+
+    <insert id="addOrderSetting" parameterType="OrderSetting">
+        INSERT INTO t_ordersetting (orderDate,number,reservations)
+        VALUES (#{orderDate},#{number},#{reservations})
+    </insert>
+
+    <update id="updateOrderSetting" parameterType="OrderSetting">
+        UPDATE t_ordersetting
+        SET
+          number=#{number}
+        WHERE
+          orderDate=#{orderDate}
+    </update>
+
+    <select id="getOrderSettingByMonth" parameterType="String" resultType="OrderSetting">
+        SELECT id,orderDate,number,reservations FROM t_ordersetting
+        WHERE orderDate BETWEEN #{startDay} and #{endDay}
+    </select>
+
+    <update id="updateReservations" parameterType="OrderSetting">
+        UPDATE t_ordersetting
+        SET
+          reservations=#{reservations}
+        WHERE
+          orderDate=#{orderDate}
+    </update>
+
+</mapper>

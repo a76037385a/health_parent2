@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+
+<mapper namespace="com.app.dao.RoleDao">
+    <select id="findRolesByUserId" parameterType="int" resultType="Role">
+      SELECT rol.*
+      FROM t_role as rol, t_user_role as url
+      WHERE rol.id = url.role_id and url.user_id = #{userId}
+    </select>
+</mapper>

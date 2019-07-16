@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.app.dao.MenuDao">
+
+
+    <select id="findMenusByRoleId" parameterType="int" resultType="Menu">
+        SELECT m.*
+        FROM t_role_menu rm, t_menu m
+        WHERE rm.menu_id = m.id and level = 1 and rm.role_id = #{roleId}
+        ORDER BY priority asc
+    </select>
+
+    <select id="findMenusByMenuId" parameterType="int" resultType="Menu">
+        SELECT m.*
+        FROM t_menu m
+        WHERE level = 2 and parentMenuId = #{menuid}
+        ORDER BY priority asc
+    </select>
+
+</mapper>

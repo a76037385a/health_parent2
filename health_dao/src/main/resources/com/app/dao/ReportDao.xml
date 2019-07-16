@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.app.dao.ReportDao">
+    <select id="countUserByMonth" parameterType="String" resultType="Integer">
+        SELECT count(1)
+        FROM t_member m
+        WHERE m.regTime &lt;= #{date}
+    </select>
+
+
+    <select id="countByPackageName" resultType="map">
+        SELECT p.name as name,count(1) as value
+        FROM
+        t_package p, t_order o
+        WHERE p.id = o.package_id
+        group by p.name
+    </select>
+</mapper>

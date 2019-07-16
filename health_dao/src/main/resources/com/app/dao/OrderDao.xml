@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.app.dao.OrderDao">
+
+
+    <select id="findOrderNumberByDate" parameterType="Date" resultType="OrderSetting">
+        SELECT * FROM t_ordersetting WHERE orderDate=#{date}
+    </select>
+
+    <select id="findOrderByMemberId" parameterType="Order" resultType="Order">
+        SELECT * FROM t_order
+        WHERE member_id=#{memberId} and orderDate=#{orderDate} and package_id=#{packageId}
+    </select>
+
+    <insert id="addNewOrder" parameterType="Order">
+        INSERT INTO t_order (member_id,orderDate,orderType,orderStatus,package_id)
+        VALUES (#{memberId},#{orderDate},#{orderType},#{orderStatus},#{packageId})
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+
+    <select id="findMemberOrderByOrder" parameterType="Order" resultType="Order">
+        SELECT * FROM t_order
+        WHERE member_id=#{memberId} and orderDate=#{orderDate} and package_id=#{packageId}
+    </select>
+
+    <select id="findOrderById" parameterType="int" resultType="Map">
+        SELECT m.name as member, p.remark as setmeal, o.orderDate as orderDate, o.orderType as orderType
+        FROM t_order o, t_package p,t_member m
+        WHERE
+        o.id=#{id} and o.member_id = m.id and o.package_id = p.id
+    </select>
+
+    <select id="countTodayOrders" parameterType="String" resultType="java.lang.Integer">
+        SELECT count(1)
+        FROM
+        t_order o
+        WHERE
+        o.orderDate = #{date}
+    </select>
+
+    <select id="countThisWeekOrders" parameterType="String" resultType="java.lang.Integer">
+        SELECT count(1)
+        FROM
+        t_order o
+        WHERE
+        o.orderDate &gt;= #{weekFirstDay}
+    </select>
+
+    <select id="countThisMonthOrders" parameterType="String" resultType="java.lang.Integer">
+        SELECT count(1)
+        FROM
+        t_order o
+        WHERE
+        o.orderDate &gt;= #{monthFirstDay}
+    </select>
+
+    <select id="countTodayVisits" parameterType="String" resultType="java.lang.Integer">
+        SELECT count(1)
+        FROM
+        t_order o
+        WHERE
+        o.orderDate = #{date} and o.orderStatus = "已到诊"
+    </select>
+
+    <select id="countThisWeekVisits" parameterType="String" resultType="java.lang.Integer">
+        SELECT count(1)
+        FROM
+        t_order o
+        WHERE
+        o.orderDate &gt;= #{weekFirstDay} and o.orderStatus = "已到诊"
+    </select>
+
+    <select id="countThisMonthVisits" parameterType="String" resultType="java.lang.Integer">
+        SELECT count(1)
+        FROM
+        t_order o
+        WHERE
+        o.orderDate &gt;= #{monthFirstDay} and o.orderStatus = "已到诊"
+    </select>
+
+    <select id="hotSetmeal" resultType="Map">
+        ELECT count(o.id) as total,p.name,CONCAT(count(o.id)/t_orderCount.counter *100,"%") as percent
+        FROM
+        t_order o, t_package p, (select count(1) as counter from t_order ) as t_orderCount
+        WHERE o.package_id = p.id
+        GROUP BY o.package_id ASC
+        LIMIT 4
+    </select>
+
+
+
+
+
+
+</mapper>
