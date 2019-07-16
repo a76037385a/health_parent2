@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+
+<mapper namespace="com.app.dao.SetmealDao">
+    
+    <select id="findAllPage" parameterType="String" resultType="Package">
+        SELECT id,name,code,helpCode,sex,age,price,remark,attention,img FROM t_package
+        <if test="value != null and value.length > 0">
+            WHERE code like #{value} or name like #{value} or helpCode like #{value}
+        </if>
+    </select>
+
+    <select id="getAllCheckGroup" resultType="CheckGroup">
+        SELECT id,code,name,helpCode,sex,remark,attention FROM t_checkgroup
+    </select>
+
+
+    <insert id="addPackgeAndCheckGroupByPackgeId" parameterType="int">
+        INSERT INTO t_package_checkgroup VALUES (#{pid}, #{gid})
+    </insert>
+
+    <insert id="addPackge" parameterType="Package">
+        INSERT INTO t_package
+        (name,code,helpCode,sex,age,price,remark,attention,img)
+        VALUES
+        (#{name},#{code},#{helpCode},#{sex},#{age},#{price},#{remark},#{attention},#{img})
+        <selectKey resultType="int" keyProperty="id" order="AFTER">
+        SELECT LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+
+    <select id="findAllPackage" resultType="Package">
+        SELECT * FROM t_package;
+    </select>
+    
+    <select id="findPackgeInfosById" parameterType="int" resultMap="PackgeResult">
+        select
+          p.*,
+          g.id as checkgroup_id,
+          g.name as checkgroup_name,
+          g.remark as checkgroup_remark,
+          i.id as checkitem_id,
+          i.name as checkitem_name
+        from
+          t_package p,
+          t_checkgroup g,
+          t_checkitem i,
+          t_package_checkgroup pg,
+          t_checkgroup_checkitem gi
+        where
+
+          p.id = pg.package_id
+          and pg.checkgroup_id = g.id
+          and pg.checkgroup_id = gi.checkgroup_id
+          and gi.checkitem_id = i.id
+          and p.id = #{id}
+
+        
+    </select>
+
+    <resultMap id="PackgeResult" type="Package" extends="PackgeInfo">
+        <collection column="checkgroup_id" ofType="CheckGroup" property="checkGroups" javaType="ArrayList" >
+            <id column="checkgroup_id" property="id"></id>
+            <result column="checkgroup_name" property="name"></result>
+            <result column="checkgroup_remark" property="remark"></result>
+            <collection column="checkitem_id" ofType="Checkitem" property="checkItems" javaType="ArrayList" >
+                <id column="checkitem_id" property="id"></id>
+                <result column="checkitem_name" property="name"></result>
+            </collection>
+        </collection>
+
+    </resultMap>
+
+    <resultMap id="PackgeInfo" type="Package">
+        <id property="id" column="id"></id>
+        <result property="name" column="name"></result>
+        <result property="code" column="code"></result>
+        <result property="helpCode" column="helpCode"></result>
+        <result property="sex" column="sex"></result>
+        <result property="age" column="age"></result>
+        <result property="price" column="price"></result>
+        <result property="remark" column="remark"></result>
+        <result property="attention" column="attention"></result>
+        <result property="img" column="img"></result>
+    </resultMap>
+
+
+
+    <select id="findPackgeByid" parameterType="int" resultType="Package">
+        SELECT * FROM  t_package
+        WHERE id=#{id}
+    </select>
+
+
+    
+</mapper>

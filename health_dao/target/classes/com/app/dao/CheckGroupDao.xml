@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.app.dao.CheckGroupDao">
+
+    <select id="findPage" parameterType="String" resultType="CheckGroup">
+        select * from t_checkgroup
+        <if test="value != null and value.length > 0">
+            WHERE code like #{value} or name like #{value} or helpCode like #{value}
+        </if>
+    </select>
+
+
+    <select id="getAllCheckitem" resultType="CheckItem">
+        SELECT * FROM t_checkitem;
+    </select>
+
+    <insert id="addCheckGroup" parameterType="com.app01.pojo.CheckGroup">
+        INSERT INTO t_checkgroup
+          (code,name,sex,helpCode,remark,attention)
+        VALUES
+          (#{code},#{name},#{sex},#{helpCode},#{remark},#{attention})
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+
+    <insert id="setCheckGroupAndCheckItem" parameterType="hashmap">
+        INSERT INTO t_checkgroup_checkitem
+         (checkgroup_id,checkitem_id)
+        VALUES
+         (#{checkgroup_id},#{checkitem_id})
+    </insert>
+
+    <select id="getCheckGroupById" parameterType="int" resultType="CheckGroup">
+        SELECT * FROM t_checkgroup WHERE id=#{id}
+    </select>
+
+    <select id="getCheckItemsByCheckGroupID" parameterType="int" resultType="int">
+        select checkitem_id from t_checkgroup_checkitem WHERE checkgroup_id=#{id};
+    </select>
+
+    <delete id="delCheckgroupAndcheckitemByCheckGroupId" parameterType="int">
+        DELETE FROM t_checkgroup_checkitem WHERE checkgroup_id=#{grpId};
+    </delete>
+
+    <update id="updateCheckGroup" parameterType="CheckGroup">
+        UPDATE t_checkgroup
+        SET
+            code=#{code},
+            name=#{name},
+            sex=#{sex},
+            helpCode=#{helpCode},
+            remark=#{remark},
+            attention=#{attention}
+        WHERE id=#{id}
+    </update>
+
+
+    <delete id="delCheckGroupById" parameterType="int">
+        DELETE FROM t_checkgroup WHERE id=#{id};
+    </delete>
+
+
+
+</mapper>
